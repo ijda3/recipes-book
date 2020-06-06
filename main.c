@@ -1,13 +1,3 @@
-#include <stdio.h>
-#include <ncurses.h>
+#include "recipe.h"
 
-int main(void) {
-	initscr();
-
-	WINDOW * win;
-	win = newwin(200, 200, 0, 0);
-
-	while(true){};
-
-	return 0;
-}
+int main() { return 0; }
