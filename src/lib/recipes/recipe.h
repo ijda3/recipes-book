@@ -10,6 +10,7 @@ void edit_recipe(Recipes* recipes);
 void use_recipe(Recipes* recipes);
 void prev_recipe(Recipes* recipes);
 void next_recipe(Recipes* recipes);
+void show_recipe(Recipes* recipes);
 void save_recipes(Recipes* recipes);
 
 #endif
