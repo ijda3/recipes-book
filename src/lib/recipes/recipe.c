@@ -1,4 +1,5 @@
 #include "recipe.h"
+#include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -70,13 +71,13 @@ Recipes* load_recipes() {
 	return recipes;
 }
 
-void add_recipe(Recipes* recipes) {}
+void add_recipe(Recipes* recipes) { printw("Add"); }
 
-void remove_recipe(Recipes* recipes) {}
+void remove_recipe(Recipes* recipes) { printw("Remove"); }
 
-void edit_recipe(Recipes* recipes) {}
+void edit_recipe(Recipes* recipes) { printw("edit"); }
 
-void use_recipe(Recipes* recipes) {}
+void use_recipe(Recipes* recipes) { printw("use"); }
 
 void prev_recipe(Recipes* recipes) {
 	recipes->current = recipes->current->prev;
@@ -88,6 +89,6 @@ void next_recipe(Recipes* recipes) {
 	show_recipe(recipes);
 }
 
-void show_recipe(Recipes* recipes) {}
+void show_recipe(Recipes* recipes) { printw("%s", recipes->current->title); }
 
 void save_recipes(Recipes* recipes) {}
