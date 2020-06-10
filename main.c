@@ -18,6 +18,7 @@ void menu() {
 	mvprintw(6, 0, "! - Apagar receita");
 	mvprintw(7, 0, "+ - Inserir receita");
 	mvprintw(8, 0, "S - Sair do livro de receitas");
+	move(11, 0);
 }
 
 int main() {
@@ -30,9 +31,11 @@ int main() {
 
 	menu();
 
+	show_recipe(recipes);
+
 	do {
-		move(11, 0);
 		key = getch();
+		move(11, 0);
 		clrtoeol();
 
 		switch (key) {

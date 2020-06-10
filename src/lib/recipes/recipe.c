@@ -26,8 +26,6 @@ struct recipe_control {
 	Recipe* last;
 };
 
-void show_recipe(Recipes* recipes);
-
 Recipes* load_recipes() {
 	Recipes* recipes = malloc(sizeof(Recipes));
 	Recipe* R1 = malloc(sizeof(Recipe));
@@ -40,31 +38,31 @@ Recipes* load_recipes() {
 
 	strcpy(R1->title, "Bolo");
 	R1->total_time = 7200;
-	strcpy(R1->author, "Senhor Barriga\n");
+	strcpy(R1->author, "Senhor Barriga");
 	R1->rating = 7.75;
 	R1->use_count = 3;
-	strcpy(R1->ingredient, "1 saco de trigo\n1 duzia de ovos\n");
-	strcpy(R1->directions, "Jogar o trigo e os ovos fora e ligar chamar pelo iFood\n");
+	strcpy(R1->ingredient, "1 saco de trigo, 1 duzia de ovos");
+	strcpy(R1->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
 	R1->prev = R3;
 	R1->next = R2;
 
-	strcpy(R2->title, "Suco de Tamarindo\n");
+	strcpy(R2->title, "Suco de Tamarindo");
 	R2->total_time = 1500;
-	strcpy(R2->author, "Chaves\n");
+	strcpy(R2->author, "Chaves");
 	R2->rating = 3.75;
-	R1->use_count = 12;
-	strcpy(R2->ingredient, "1 saco de tamarindos\n1 balde de sorvete\n");
-	strcpy(R2->directions, "Espremer os tamarindos\nAdicionar agua\nDormir no barril\n");
+	R2->use_count = 12;
+	strcpy(R2->ingredient, "1 saco de tamarindos, 1 balde de sorvete");
+	strcpy(R2->directions, "Espremer os tamarindos, Adicionar agua, Dormir no barril");
 	R2->prev = R1;
 	R2->next = R3;
 
-	strcpy(R3->title, "Miojo\n");
-	R1->total_time = 180;
-	strcpy(R3->author, "Ana Maria Braga\n");
-	R1->rating = 10;
-	R1->use_count = 82;
-	strcpy(R3->ingredient, "1 saco de trigo\n1 duzia de ovos");
-	strcpy(R3->directions, "Jogar o trigo e os ovos fora e ligar chamar pelo iFood");
+	strcpy(R3->title, "Miojo");
+	R3->total_time = 180;
+	strcpy(R3->author, "Ana Maria Braga");
+	R3->rating = 10;
+	R3->use_count = 82;
+	strcpy(R3->ingredient, "1 saco de trigo, 1 duzia de ovos");
+	strcpy(R3->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
 	R3->prev = R2;
 	R3->next = R1;
 
@@ -89,6 +87,14 @@ void next_recipe(Recipes* recipes) {
 	show_recipe(recipes);
 }
 
-void show_recipe(Recipes* recipes) { printw("%s", recipes->current->title); }
+void show_recipe(Recipes* recipes) {
+	printw("Nome da receita: %s\n", recipes->current->title);
+	printw("Tempo de preparo: %d minutos\n", recipes->current->total_time);
+	printw("Ingredientes: %s\n", recipes->current->ingredient);
+	printw("Modo de preparo: %s\n", recipes->current->directions);
+	printw("Nome do criador: %s\n", recipes->current->author);
+	printw("Vezes de preparo: %d\n", recipes->current->use_count);
+	printw("Nota da receita: %.02f\n", recipes->current->rating);
+}
 
 void save_recipes(Recipes* recipes) {}
