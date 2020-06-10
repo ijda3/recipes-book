@@ -26,17 +26,17 @@ int main() {
 	Recipes* recipes = load_recipes();
 
 	initscr();
+	raw();
 	keypad(stdscr, TRUE);
 	noecho();
 
 	menu();
 
-	show_recipe(recipes);
-
 	do {
+		show_recipe(recipes);
 		key = getch();
 		move(11, 0);
-		clrtoeol();
+		clrtobot();
 
 		switch (key) {
 			case KEY_LEFT:
