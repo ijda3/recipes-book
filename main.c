@@ -62,7 +62,6 @@ int main() {
 
 	save_recipes(recipes);
 
-	free(recipes);
 	endwin();
 
 	return 0;
