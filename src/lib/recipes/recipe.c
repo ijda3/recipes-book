@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define DEFAULT_LENGTH 100
 #define TEXT_LENGTH 500
@@ -28,46 +29,82 @@ struct recipe_control {
 
 Recipes* load_recipes() {
 	Recipes* recipes = malloc(sizeof(Recipes));
-	Recipe* R1 = malloc(sizeof(Recipe));
-	Recipe* R2 = malloc(sizeof(Recipe));
-	Recipe* R3 = malloc(sizeof(Recipe));
-	recipes->total_recipes = 3;
-	recipes->current = R1;
-	recipes->first = R1;
-	recipes->last = R3;
-
-	strcpy(R1->title, "Bolo");
-	R1->total_time = 7200;
-	strcpy(R1->author, "Senhor Barriga");
-	R1->rating = 7.75;
-	R1->use_count = 3;
-	strcpy(R1->ingredient, "1 saco de trigo, 1 duzia de ovos");
-	strcpy(R1->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
-	R1->prev = R3;
-	R1->next = R2;
-
-	strcpy(R2->title, "Suco de Tamarindo");
-	R2->total_time = 1500;
-	strcpy(R2->author, "Chaves");
-	R2->rating = 3.75;
-	R2->use_count = 12;
-	strcpy(R2->ingredient, "1 saco de tamarindos, 1 balde de sorvete");
-	strcpy(R2->directions, "Espremer os tamarindos, Adicionar agua, Dormir no barril");
-	R2->prev = R1;
-	R2->next = R3;
-
-	strcpy(R3->title, "Miojo");
-	R3->total_time = 180;
-	strcpy(R3->author, "Ana Maria Braga");
-	R3->rating = 10;
-	R3->use_count = 82;
-	strcpy(R3->ingredient, "1 saco de trigo, 1 duzia de ovos");
-	strcpy(R3->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
-	R3->prev = R2;
-	R3->next = R1;
-
+	Recipe* temp_recipe = malloc(sizeof(Recipe));
+	Recipe* temp_prev;
+	FILE* fp;
+	int i;
+	// check if file does not exist
+	if (access("database.bin", F_OK) == -1) {
+		recipes->total_recipes = 0;
+		recipes->current = NULL;
+		recipes->first = NULL;
+		recipes->last = NULL;
+		return recipes;
+	}
+	fp = fopen("database.bin", "rb");
+	fread(&recipes->total_recipes, sizeof(int), 1, fp);
+	// create 1st element of circular doubly linked list
+	fread(temp_recipe, sizeof(Recipe), 1, fp);
+	temp_recipe->next = temp_recipe;
+	temp_recipe->prev = temp_recipe;
+	temp_prev = temp_recipe;
+	// recipe_control pointers
+	recipes->current = temp_recipe;
+	recipes->first = temp_recipe;
+	// read the remaining recipes
+	for (i = 1; i < recipes->total_recipes; i++) {
+		temp_recipe = malloc(sizeof(Recipe));
+		fread(temp_recipe, sizeof(Recipe), 1, fp);
+		temp_recipe->prev = temp_prev;
+		temp_prev->next = temp_recipe;
+		temp_prev = temp_recipe;
+	}
+	recipes->last = temp_recipe;
+	// linking first and last elements
+	temp_recipe->next = recipes->first;
+	recipes->first->prev = temp_recipe;
 	return recipes;
 }
+
+// 	Recipe* R1 = malloc(sizeof(Recipe));
+// 	Recipe* R2 = malloc(sizeof(Recipe));
+// 	Recipe* R3 = malloc(sizeof(Recipe));
+// 	recipes->total_recipes = 3;
+// 	recipes->current = R1;
+// 	recipes->first = R1;
+// 	recipes->last = R3;
+
+// 	strcpy(R1->title, "Bolo");
+// 	R1->total_time = 7200;
+// 	strcpy(R1->author, "Senhor Barriga");
+// 	R1->rating = 7.75;
+// 	R1->use_count = 3;
+// 	strcpy(R1->ingredient, "1 saco de trigo, 1 duzia de ovos");
+// 	strcpy(R1->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
+// 	R1->prev = R3;
+// 	R1->next = R2;
+
+// 	strcpy(R2->title, "Suco de Tamarindo");
+// 	R2->total_time = 1500;
+// 	strcpy(R2->author, "Chaves");
+// 	R2->rating = 3.75;
+// 	R2->use_count = 12;
+// 	strcpy(R2->ingredient, "1 saco de tamarindos, 1 balde de sorvete");
+// 	strcpy(R2->directions, "Espremer os tamarindos, Adicionar agua, Dormir no barril");
+// 	R2->prev = R1;
+// 	R2->next = R3;
+
+// 	strcpy(R3->title, "Miojo");
+// 	R3->total_time = 180;
+// 	strcpy(R3->author, "Ana Maria Braga");
+// 	R3->rating = 10;
+// 	R3->use_count = 82;
+// 	strcpy(R3->ingredient, "1 saco de trigo, 1 duzia de ovos");
+// 	strcpy(R3->directions, "Jogar o trigo e os ovos fora e pedir pelo iFood");
+// 	R3->prev = R2;
+// 	R3->next = R1;
+// 	return recipes;
+// }
 
 void add_recipe(Recipes* recipes) { printw("Add"); }
 
@@ -128,27 +165,30 @@ void show_recipe(Recipes* recipes) {
 }
 
 void save_recipes(Recipes* recipes) {
-	FILE* fp;
-	fp = fopen("database.bin", "wb");
-	int i;
-	// check if file was created
-	if (fp == NULL) {
-		printw("Erro ao criar o arquivo database.bin");
-		return;
-	}
-	// save total_recipes at the start of the file to make loading it easier
-	fwrite(&recipes->total_recipes, sizeof(int), 1, fp);
-	// write and free each recipe
-	for (i = 0; i < recipes->total_recipes; i++) {
-		fwrite(recipes->current, sizeof(Recipe), 1, fp);
-		// check if it's the last recipe
-		if (i == recipes->total_recipes - 1) {
-			free(recipes->current);
-			break;
+
+	if (recipes->total_recipes > 0) {
+		FILE* fp;
+		fp = fopen("database.bin", "wb");
+		int i;
+		// check if file was created
+		if (fp == NULL) {
+			printw("Erro ao criar o arquivo database.bin");
+			return;
 		}
-		recipes->current = recipes->current->next;
-		free(recipes->current->prev);
+		// save total_recipes at the start of the file to make loading it easier
+		fwrite(&recipes->total_recipes, sizeof(int), 1, fp);
+		// write and free each recipe
+		for (i = 0; i < recipes->total_recipes; i++) {
+			fwrite(recipes->current, sizeof(Recipe), 1, fp);
+			// check if it's the last recipe
+			if (i == recipes->total_recipes - 1) {
+				free(recipes->current);
+				break;
+			}
+			recipes->current = recipes->current->next;
+			free(recipes->current->prev);
+		}
+		fclose(fp);
 	}
 	free(recipes);
-	fclose(fp);
 }
