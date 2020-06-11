@@ -31,7 +31,7 @@ Recipes* load_recipes() {
 	Recipe* R1 = malloc(sizeof(Recipe));
 	Recipe* R2 = malloc(sizeof(Recipe));
 	Recipe* R3 = malloc(sizeof(Recipe));
-	recipes->total_recipes = 0;
+	recipes->total_recipes = 3;
 	recipes->current = R1;
 	recipes->first = R1;
 	recipes->last = R3;
@@ -71,30 +71,59 @@ Recipes* load_recipes() {
 
 void add_recipe(Recipes* recipes) { printw("Add"); }
 
-void remove_recipe(Recipes* recipes) { printw("Remove"); }
+void remove_recipe(Recipes* recipes) {
+	if (recipes->total_recipes > 0) {
+		Recipe* temp_current = recipes->current;
+
+		if (recipes->total_recipes == 1) {
+			recipes->current = NULL;
+			recipes->first = NULL;
+			recipes->last = NULL;
+		} else {
+			recipes->current = recipes->current->next;
+			recipes->current->prev = temp_current->prev;
+			temp_current->prev->next = recipes->current;
+
+			if (temp_current == recipes->first) {
+				recipes->first = recipes->current;
+			} else if (temp_current == recipes->last) {
+				recipes->last = recipes->current;
+			}
+		}
+
+		recipes->total_recipes--;
+		free(temp_current);
+	}
+}
 
 void edit_recipe(Recipes* recipes) { printw("edit"); }
 
 void use_recipe(Recipes* recipes) { printw("use"); }
 
 void prev_recipe(Recipes* recipes) {
-	recipes->current = recipes->current->prev;
-	show_recipe(recipes);
+	if (recipes->current != NULL) {
+		recipes->current = recipes->current->prev;
+	}
 }
 
 void next_recipe(Recipes* recipes) {
-	recipes->current = recipes->current->next;
-	show_recipe(recipes);
+	if (recipes->current != NULL) {
+		recipes->current = recipes->current->next;
+	}
 }
 
 void show_recipe(Recipes* recipes) {
-	printw("Nome da receita: %s\n", recipes->current->title);
-	printw("Tempo de preparo: %d minutos\n", recipes->current->total_time);
-	printw("Ingredientes: %s\n", recipes->current->ingredient);
-	printw("Modo de preparo: %s\n", recipes->current->directions);
-	printw("Nome do criador: %s\n", recipes->current->author);
-	printw("Vezes de preparo: %d\n", recipes->current->use_count);
-	printw("Nota da receita: %.02f\n", recipes->current->rating);
+	if (recipes->current != NULL) {
+		printw("Nome da receita: %s\n", recipes->current->title);
+		printw("Tempo de preparo: %d minutos\n", recipes->current->total_time);
+		printw("Ingredientes: %s\n", recipes->current->ingredient);
+		printw("Modo de preparo: %s\n", recipes->current->directions);
+		printw("Nome do criador: %s\n", recipes->current->author);
+		printw("Vezes de preparo: %d\n", recipes->current->use_count);
+		printw("Nota da receita: %.02f\n", recipes->current->rating);
+	} else {
+		printw("Nao ha receita cadastrada!");
+	}
 }
 
 void save_recipes(Recipes* recipes) {}
