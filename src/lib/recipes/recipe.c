@@ -74,16 +74,17 @@ void add_recipe(Recipes* recipes) { printw("Add"); }
 void remove_recipe(Recipes* recipes) {
 	if (recipes->total_recipes > 0) {
 		Recipe* temp_current = recipes->current;
-
+		// if only 1 recipe saved, fix pointers of recipe_control
 		if (recipes->total_recipes == 1) {
 			recipes->current = NULL;
 			recipes->first = NULL;
 			recipes->last = NULL;
 		} else {
+			// set pointers of prev and next recipes
 			recipes->current = recipes->current->next;
 			recipes->current->prev = temp_current->prev;
 			temp_current->prev->next = recipes->current;
-
+			// set recipe_control pointers if current is first or last
 			if (temp_current == recipes->first) {
 				recipes->first = recipes->current;
 			} else if (temp_current == recipes->last) {
@@ -126,4 +127,28 @@ void show_recipe(Recipes* recipes) {
 	}
 }
 
-void save_recipes(Recipes* recipes) {}
+void save_recipes(Recipes* recipes) {
+	FILE* fp;
+	fp = fopen("database.bin", "wb");
+	int i;
+	// check if file was created
+	if (fp == NULL) {
+		printw("Erro ao criar o arquivo database.bin");
+		return;
+	}
+	// save total_recipes at the start of the file to make loading it easier
+	fwrite(&recipes->total_recipes, sizeof(int), 1, fp);
+	// write and free each recipe
+	for (i = 0; i < recipes->total_recipes; i++) {
+		fwrite(recipes->current, sizeof(Recipe), 1, fp);
+		// check if it's the last recipe
+		if (i == recipes->total_recipes - 1) {
+			free(recipes->current);
+			break;
+		}
+		recipes->current = recipes->current->next;
+		free(recipes->current->prev);
+	}
+	free(recipes);
+	fclose(fp);
+}
