@@ -98,7 +98,7 @@ void remove_recipe(Recipes* recipes) {
 
 void edit_recipe(Recipes* recipes) { printw("edit"); }
 
-void use_recipe(Recipes* recipes) { recipes->current->use_count++; }
+void use_recipe(Recipes* recipes) { printw("use"); }
 
 void prev_recipe(Recipes* recipes) {
 	if (recipes->current != NULL) {
