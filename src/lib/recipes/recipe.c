@@ -1,4 +1,6 @@
 #include "recipe.h"
+
+#include <ctype.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,13 +66,24 @@ Recipes* load_recipes() {
 
 void add_recipe(Recipes* recipes) {
 	Recipe* new_recipe = malloc(sizeof(Recipe));
+	char temp_title[DEFAULT_LENGTH];
+	char temp_char;
+	int i = 0;
 
 	move(11, 0);
 	clrtobot();
 	echo();
 
 	printw("Nome da receita: ");
-	getstr(new_recipe->title);
+	getstr(temp_title);
+
+	while (temp_title[i] != '\0') {
+		temp_char = toupper(temp_title[i]);
+
+		strcat(new_recipe->title, &temp_char);
+
+		i++;
+	}
 
 	printw("Tempo de preparo (minutos): ");
 	scanw("%d", &new_recipe->total_time);
