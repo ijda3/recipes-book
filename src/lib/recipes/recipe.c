@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEFAULT_LENGTH 100
-#define TEXT_LENGTH 500
+#define DEFAULT_LENGTH 150
+#define TEXT_LENGTH 5000
 
 typedef struct recipe {
 	char title[DEFAULT_LENGTH];
