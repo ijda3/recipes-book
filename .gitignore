@@ -1,6 +1,8 @@
 .vscode/
 *.o
 main
+seed/seed
 teste.c
 a.out
 receita.code-workspace
+.DS_Store
